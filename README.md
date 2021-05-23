@@ -12,14 +12,14 @@ cmake --build ./
 
 ## Настройка базы данных ##
 
-1. Для работы с базами данных нужно переключиться в режим mysql 
-sudo mysql;
+1. Для работы с базами данных нужно переключиться в режим mysql
 2. Для создания тестового пользователя с именем lab1 и базы данных lab1_Gal с таблицей Person выполняются команды из файла sql_commands/database_creation.sql.
 3. Заполнение базы данных сгенерированными записями производится командой sql_commands/database_generation.sql.
 
 Выполнение команды в mysql:
 
 ```bash
+sudo mysql;
 source sql_commands/database_creation.sql;
 source sql_commands/database_generation.sql;
 ```
