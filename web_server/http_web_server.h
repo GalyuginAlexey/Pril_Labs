@@ -73,7 +73,7 @@ protected:
                 .repeatable(false)
                 .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleHelp)));
         options.addOption(
-            Option("host", "h", "set ip address for dtabase")
+            Option("host", "h", "set ip address for database")
                 .required(false)
                 .repeatable(false)
                 .argument("value")
@@ -107,6 +107,12 @@ protected:
                 .required(false)
                 .repeatable(false)
                 .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleInitDB)));
+        options.addOption(
+            Option("cache_servers", "cs", "set ignite cache servers")
+                .required(false)
+                .repeatable(false)
+                .argument("value")
+                .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleCacheServers)));
         
     }
 
@@ -114,7 +120,7 @@ protected:
                       [[maybe_unused]] const std::string &value)
     {
         std::cout << "init db" << std::endl;
-        database::Author::init();
+        database::Person::init();
     }
     void handleLogin([[maybe_unused]] const std::string &name,
                      [[maybe_unused]] const std::string &value)
@@ -149,7 +155,12 @@ protected:
         Config::get().host() = value;
     }
 
-
+    void handleCacheServers([[maybe_unused]] const std::string &name,
+                            [[maybe_unused]] const std::string &value)
+    {
+        std::cout << "cache servers:" << value << std::endl;
+        Config::get().cache_servers() = value;
+    }
 
     void handleHelp([[maybe_unused]] const std::string &name,
                     [[maybe_unused]] const std::string &value)
@@ -170,7 +181,7 @@ protected:
         {
             unsigned short port = (unsigned short)
                                       config()
-                                          .getInt("HTTPWebServer.port", 80);
+                                          .getInt("HTTPWebServer.port", 8080);
             std::string format(
                 config().getString("HTTPWebServer.format",
                                    DateTimeFormat::SORTABLE_FORMAT));

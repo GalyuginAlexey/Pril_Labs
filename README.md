@@ -1,55 +1,73 @@
-# hl_event_server
+# Лабораторная работа №2 #
 
-## install C++
-sudo apt-get install gcc g++ cmake git libssl-dev zlib1g-dev librdkafka-dev mysql-server mysql-client libmysqlclient-dev libboost-all-dev
+Выполнил: Галюгин Алексей, М8О-103М-20
 
-## install java
+## Сборка проекта ##
 
-sudo apt install openjdk-8-jdk
+```bash
+cmake configure .
+cmake .
+cmake --build ./
+```
 
-sudo apt install openjdk-8-jre
+## Настройка базы данных ##
 
-## install iginte
+1. Для работы с базами данных нужно переключиться в режим mysql.
+2. Для создания тестового пользователя с именем lab1 и базы данных lab1_Gal с таблицей Person выполняются команды из файла sql_commands/database_creation.sql.
+3. Заполнение базы данных сгенерированными записями производится командой sql_commands/database_generation.sql.
 
-Download from https://ignite.apache.org/download.cgi#binaries
+Выполнение команды в mysql:
 
-build platforms/cpp
+```bash
+sudo mysql;
+source sql_commands/database_creation.sql;
+source sql_commands/database_generation.sql;
+```
 
-## install CPPRDKafkfa
+## Запуск сервера ##
 
+Для запуска сервера следует выполнить команду:
 
-// https://github.com/edenhill/librdkafka
-https://github.com/mfontanini/cppkafka
-mkdir build
-cd build
-cmake <OPTIONS> ..
-make
-make install
+```bash
+sudo sh ./start.sh
+```
 
+## Запуск Apache ##
 
-## Install poco
+```bash
+sudo docker-compose up -d
+```
 
-git clone -b master https://github.com/pocoproject/poco.git
+## Тестирование с помощью gtest ##
 
-cd poco
+Запуск тестов осуществляется командой:
 
-mkdir cmake-build
+```bash
+./gtests
+```
 
-cd cmake-build
+## Тестирование с помощью wrk ##
 
-cmake ..
+Нагрузочное тестирование осуществлялось с помощью команды wrk
 
-cmake --build . --config Release
+```bash
+wrk -t 6 -c 50 -d 30s http://localhost:8080/person?login=411-88-7854 
+```
 
-sudo cmake --build . --target install
+Нагрузочное тестирование производилось для 1, 2, 6 и 10 потоков при 50 подключениях в течение 30 секунд. Полученные данные (Requests/sec - количество запросов в секунду, Latency(ms) - задержка в миллисекундах):
 
-## Install gtest
-sudo apt-get install libgtest-dev
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 355.90       | 45.12
+2       | 179.37       | 44.77
+6       | 117.66       | 45.48
+10      | 87.74        | 45.82
 
-cd /usr/src/gtest/
+При кешировании данных
 
-sudo cmake -DBUILD_SHARED_LIBS=ON
-
-sudo make
-
-sudo cp *.so /usr/lib
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 3089.90      | 3.72
+2       | 3061.92      | 3.57
+6       | 2912.14      | 4.17
+10      | 2862.68      | 5.13
