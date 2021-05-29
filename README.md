@@ -1,55 +1,72 @@
-# hl_event_server
+# Лабораторная работа №3 #
 
-## install C++
-sudo apt-get install gcc g++ cmake git libssl-dev zlib1g-dev librdkafka-dev mysql-server mysql-client libmysqlclient-dev libboost-all-dev
+Выполнил: Галюгин Алексей, М8О-103М-20
 
-## install java
+## Сборка проекта ##
 
-sudo apt install openjdk-8-jdk
+```bash
+cmake configure .
+cmake .
+cmake --build ./
+```
 
-sudo apt install openjdk-8-jre
+## Исполняемый файл для создания шардов ##
 
-## install iginte
+```bash
+./data_shard_splitter
+```
 
-Download from https://ignite.apache.org/download.cgi#binaries
+## Запуск Docker-окружения ##
 
-build platforms/cpp
+```bash
+sudo docker-compose up -d
+```
 
-## install CPPRDKafkfa
+## Остановка Docker-окружения ##
 
+```bash
+sudo docker-compose stop
+```
 
-// https://github.com/edenhill/librdkafka
-https://github.com/mfontanini/cppkafka
-mkdir build
-cd build
-cmake <OPTIONS> ..
-make
-make install
+Заполнение базы данных с помощью скрипта:
 
+```bash
+mysql -u test -p pzjqUkMnc7vfNHET -h 127.0.0.1 -P 6033 --comments
+source sql_commands/shard_init.sql;
+source sql_commands/shard_fill.sql;
+```
 
-## Install poco
+Файл генерирует скрипт shard_fill.sql.
 
-git clone -b master https://github.com/pocoproject/poco.git
+## Запуск сервера ##
 
-cd poco
+Для запуска сервера следует выполнить команду:
 
-mkdir cmake-build
+```bash
+sudo sh ./start.sh
+```
 
-cd cmake-build
+## Тестирование с помощью gtest ##
 
-cmake ..
+Запуск тестов осуществляется командой:
 
-cmake --build . --config Release
+```bash
+./gtests
+```
 
-sudo cmake --build . --target install
+## Тестирование с помощью wrk ##
 
-## Install gtest
-sudo apt-get install libgtest-dev
+Нагрузочное тестирование осуществлялось с помощью команды wrk
 
-cd /usr/src/gtest/
+```bash
+wrk -t 6 -c 50 -d 30s http://localhost:8080/person?login=411-88-7854 
+```
 
-sudo cmake -DBUILD_SHARED_LIBS=ON
+Нагрузочное тестирование производилось для 1, 2, 6 и 10 потоков при 50 подключениях в течение 30 секунд. Полученные данные (Requests/sec - количество запросов в секунду, Latency(ms) - задержка в миллисекундах):
 
-sudo make
-
-sudo cp *.so /usr/lib
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 2605.07      | 7.12
+2       | 2700.37      | 6.02
+6       | 2611.14      | 6.53
+10      | 2495.55      | 6.71
