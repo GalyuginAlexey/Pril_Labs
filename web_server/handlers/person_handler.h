@@ -203,7 +203,6 @@ public:
 
 private:
     std::string _format;
-
 };
 
 #endif //PERSON_HANDLER_H
