@@ -25,6 +25,7 @@ namespace database
 
             Poco::Data::Session session = database::Database::get().create_session();
             //*
+
             Statement drop_stmt(session);
             drop_stmt << "DROP TABLE IF EXISTS Person", now;
             //*/
@@ -109,6 +110,7 @@ namespace database
             std::cout << "connection:" << e.what() << std::endl;
             throw;
         }
+        
         catch (Poco::Data::MySQL::StatementException &e)
         {
 
