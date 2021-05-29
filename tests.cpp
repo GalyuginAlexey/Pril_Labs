@@ -45,10 +45,10 @@ protected:
     
     ~TestApp() {
         remove_person("111", 0);
-        remove_person("222", 1);
-        remove_person("333-333-333", 1);
-        remove_person("54321", 2);
-        remove_person("12345", 0);
+        remove_person("456", 1);
+        remove_person("789", 1);
+        remove_person("509", 2);
+        remove_person("919", 0);
 
         reset_ai(0);
         reset_ai(1);
@@ -66,68 +66,63 @@ protected:
 TEST_F(TestApp, TestPerson) {
 
     database::Person person;
-    /*
-    std::cout << "Shard #0: " << get_ai(0) << std::endl;
-    std::cout << "Shard #1: " << get_ai(1) << std::endl;
-    std::cout << "Shard #2: " << get_ai(2) << std::endl;
-    */
-    //POST tests
-    person.login() = "111";
-    person.first_name() = "Anton";
-    person.last_name() = "Larin";
-    person.age() = 22;
+    person.login() = "123";
+    person.first_name() = "Jack";
+    person.last_name() = "London";
+    person.age() = 34;
     testing::internal::CaptureStdout();
     person.save_to_mysql();
     ASSERT_EQ(testing::internal::GetCapturedStdout(), "-- sharding:0\n");
 
-    person.login() = "222";
-    person.first_name() = "A";
-    person.last_name() = "L";
+    person.login() = "456";
+    person.first_name() = "Tom";
+    person.last_name() = "Sawyer";
     testing::internal::CaptureStdout();
     person.save_to_mysql();
     ASSERT_EQ(testing::internal::GetCapturedStdout(), "-- sharding:1\n");
 
-    person.login() = "333-333-333";
-    person.first_name() = "Alexey";
-    person.last_name() = "Vorobev";
-    person.age() = 22;
+     person.login() = "789";
+    person.first_name() = "Greg";
+    person.last_name() = "Makeev";
+    person.age() = 31;
     testing::internal::CaptureStdout();
     person.save_to_mysql();
     ASSERT_EQ(testing::internal::GetCapturedStdout(), "-- sharding:1\n");
 
-    person.login() = "54321";
-    person.first_name() = "Vlad";
-    person.last_name() = "Petrushin";
-    person.age() = 22;
+    person.login() = "509";
+    person.first_name() = "Andrey";
+    person.last_name() = "Saveliev";
+    person.age() = 27;
     testing::internal::CaptureStdout();
     person.save_to_mysql();
     ASSERT_EQ(testing::internal::GetCapturedStdout(), "-- sharding:2\n");
 
-    person.login() = "12345";
-    person.first_name() = "Alexey";
-    person.last_name() = "Vinnikov";
-    person.age() = 22;
+    person.login() = "919";
+    person.first_name() = "Pavel";
+    person.last_name() = "Petrov";
+    person.age() = 18;
     testing::internal::CaptureStdout();
     person.save_to_mysql();
     ASSERT_EQ(testing::internal::GetCapturedStdout(), "-- sharding:0\n");
 
     //GET tests
-    database::Person login_result1 = database::Person::read_by_login("111");
-    ASSERT_EQ(login_result1.get_first_name(), "Anton");
-    ASSERT_EQ(login_result1.get_last_name(), "Larin");
-    ASSERT_EQ(login_result1.get_age(), 22);
+    database::Person login_result1 = database::Person::read_by_login("123");
+    ASSERT_EQ(login_result1.get_first_name(), "Jack");
+    ASSERT_EQ(login_result1.get_last_name(), "London");
+    ASSERT_EQ(login_result1.get_age(), 34);
 
-    database::Person login_result2 = database::Person::read_by_login("222");
-    ASSERT_EQ(login_result2.get_first_name(), "A");
-    ASSERT_EQ(login_result2.get_last_name(), "L");
-    ASSERT_EQ(login_result2.get_age(), 22);
+    database::Person login_result2 = database::Person::read_by_login("456");
+    ASSERT_EQ(login_result2.get_first_name(), "Tom");
+    ASSERT_EQ(login_result2.get_last_name(), "Sawyer");
+    ASSERT_EQ(login_result2.get_age(), 34);
 
-    auto name_result1 = database::Person::search("Anton", "Larin");
-    ASSERT_EQ(name_result1.at(0).get_login(), "111");
+    auto name_result1 = database::Person::search("Jack", "London");
+    ASSERT_EQ(name_result1.at(0).get_login(), "123");
     ASSERT_EQ(name_result1.size(), 1);
 
-    auto name_result2 = database::Person::search("Alexey", "V");
+    auto name_result2 = database::Person::search("Tom", "Sawyer");
     ASSERT_EQ(name_result2.size(), 2);
+    ASSERT_EQ(name_result2.at(0).get_last_name(), "Sawyer");
 
     auto full_query = database::Person::read_all();
     ASSERT_EQ(full_query.size(), 100005);
