@@ -44,7 +44,7 @@ protected:
     }
     
     ~TestApp() {
-        remove_person("111", 0);
+        remove_person("123", 0);
         remove_person("456", 1);
         remove_person("789", 1);
         remove_person("509", 2);
