@@ -1,10 +1,10 @@
-CREATE USER 'lab'@'localhost' IDENTIFIED BY '12345';
+CREATE USER 'lab1'@'localhost' IDENTIFIED BY '12345';
 
-CREATE DATABASE itlabs;
-GRANT ALL PRIVILEGES ON itlabs.* TO 'lab'@'localhost';
+CREATE DATABASE lab1_Gal;
+GRANT ALL PRIVILEGES ON lab1_Gal.* TO 'lab1'@'localhost';
 FLUSH PRIVILEGES;
 
-use itlabs;
+use lab1_Gal;
 CREATE TABLE IF NOT EXISTS Person (
     id INT NOT NULL AUTO_INCREMENT, 
     login VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
