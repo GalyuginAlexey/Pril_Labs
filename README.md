@@ -36,7 +36,7 @@ source sql_commands/shard_init.sql;
 source sql_commands/shard_fill.sql;
 ```
 
-Файл генерирует скрипт shard_fill.sql.
+Файл генерирует скрипт shard_fill.sql .
 
 ## Запуск сервера ##
 
