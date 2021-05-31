@@ -1,55 +1,121 @@
-# hl_event_server
+# Лабораторная работа №4 #
 
-## install C++
-sudo apt-get install gcc g++ cmake git libssl-dev zlib1g-dev librdkafka-dev mysql-server mysql-client libmysqlclient-dev libboost-all-dev
+Выполнил: Галюгин Алексей, Группа - М8О-103М-20.
 
-## install java
+## Сборка проекта ##
 
-sudo apt install openjdk-8-jdk
+```bash
+cmake configure .
+cmake .
+cmake --build ./
+```
 
-sudo apt install openjdk-8-jre
+## Файл для создания шардов ##
 
-## install iginte
+```bash
+./data_shard_splitter
+```
 
-Download from https://ignite.apache.org/download.cgi#binaries
+## Запуск Docker-окружения ##
 
-build platforms/cpp
+```bash
+sudo docker-compose up -d
+```
 
-## install CPPRDKafkfa
+## Остановка Docker-окружения ##
 
+```bash
+sudo docker-compose stop
+```
 
-// https://github.com/edenhill/librdkafka
-https://github.com/mfontanini/cppkafka
-mkdir build
-cd build
-cmake <OPTIONS> ..
-make
-make install
+## База Данных ##
 
+Заполнение базы данных с помощью скрипта:
 
-## Install poco
+```bash
+mysql -u test -p pzjqUkMnc7vfNHET -h 127.0.0.1 -P 6033 --comments
+source sql_commands/shard_init.sql;
+source sql_commands/shard_fill.sql;
+```
 
-git clone -b master https://github.com/pocoproject/poco.git
+Файл генерирует скрипт shard_fill.sql .
 
-cd poco
+Для того, чтобы очистить после тестирования необходимо использовать команду:
 
-mkdir cmake-build
+```bash
+source sql_commands/shard_cleanup.sql;
+```
 
-cd cmake-build
+Для того, чтобы удалить таблицы на шардах необходимо использовать команду:
 
-cmake ..
+```bash
+source sql_commands/shard_drop.sql;
+```
 
-cmake --build . --config Release
+## Запуск сервера ##
 
-sudo cmake --build . --target install
+Для запуска сервера необходимо выполнить команду:
 
-## Install gtest
-sudo apt-get install libgtest-dev
+```bash
+sudo sh ./start.sh
+```
 
-cd /usr/src/gtest/
+Запуск подписчика без очереди:
 
-sudo cmake -DBUILD_SHARED_LIBS=ON
+```bash
+sudo sh ./start_writer.sh
+```
 
-sudo make
+## Тестирование ##
 
-sudo cp *.so /usr/lib
+Запуск тестов осуществляется с  помощью команды:
+
+```bash
+./gtests
+```
+
+## Тестирование с помощью wrk ##
+
+Нагрузочное тестирование осуществлялось с помощью команды wrk:
+
+```bash
+sudo sh ./tests.sh 
+```
+
+Нагрузочное тестирование производилось для 1, 2, 6, а также 10 потоков при 50 подключениях в течение 30 секунд. Полученные данные  (Requests/sec - количество запросов в секунду, Latency(ms) - задержка в миллисекундах). Проводились тесты на чтение данных, а так же и на их запись с помощью файла .lua:  
+
+Запись с очередью:
+
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 69.15        | 190.23
+2       | 56.21        | 278.66
+6       | 57.94        | 243.46
+10      | 53.29        | 275.80
+
+Без очереди:
+
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 32.11        | 405.12
+2       | 39.52        | 394.20
+6       | 34.59        | 381.68
+10      | 33.95        | 398.27
+
+Чтение с использованием кэша:
+
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 2605.07      | 7.12
+2       | 2700.37      | 6.02
+6       | 2611.14      | 6.53
+10      | 2495.55      | 6.71
+
+Без использования кэша:
+
+Threads | Requests/sec | Latency(ms)
+---     | ---          | ---
+1       | 355.90       | 45.12
+2       | 179.37       | 44.77
+6       | 117.66       | 45.48
+10      | 87.74        | 45.82
