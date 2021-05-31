@@ -16,6 +16,8 @@ cmake --build ./
 ./data_shard_splitter
 ```
 
+Файл генерирует скрипт shard_fill.sql .
+
 ## Запуск Docker-окружения ##
 
 ```bash
@@ -35,8 +37,6 @@ mysql -u test -p pzjqUkMnc7vfNHET -h 127.0.0.1 -P 6033 --comments
 source sql_commands/shard_init.sql;
 source sql_commands/shard_fill.sql;
 ```
-
-Файл генерирует скрипт shard_fill.sql .
 
 ## Запуск сервера ##
 
