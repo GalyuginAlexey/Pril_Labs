@@ -10,11 +10,13 @@ cmake .
 cmake --build ./
 ```
 
-## Файл для создания шардов ##
+## Скрипт для заполнения шардов ##
 
 ```bash
 ./data_shard_splitter
 ```
+
+Файл генерирует скрипт shard_fill.sql .
 
 ## Запуск Docker-окружения ##
 
@@ -37,8 +39,6 @@ mysql -u test -p pzjqUkMnc7vfNHET -h 127.0.0.1 -P 6033 --comments
 source sql_commands/shard_init.sql;
 source sql_commands/shard_fill.sql;
 ```
-
-Файл генерирует скрипт shard_fill.sql .
 
 Для того, чтобы очистить данные с узлов необходимо использовать команду:
 
